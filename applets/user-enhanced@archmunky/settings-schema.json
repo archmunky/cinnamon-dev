@@ -1,0 +1,12 @@
+{
+ "display-name" : {
+    "type" : "switch",
+    "default" : true,
+    "description": "Display user name on panel"
+ },
+ "display-icon" : {
+    "type" : "switch",
+    "default" : true,
+    "description": "Display user icon on panel"
+ }
+}

@@ -1,0 +1,6 @@
+{
+    "uuid": "calendar-ics@archmunky",
+    "name": "Calendar ICS",
+    "description": "Parse one or more ICS calendar files and show the next week's events in popup",
+    "icon": "x-office-calendar"
+}

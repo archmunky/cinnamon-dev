@@ -1,0 +1,6 @@
+{
+    "uuid": "timer-test@archmunky",
+    "name": "Timer Testing",
+    "description": "Figure out why my timers aren't working",
+    "icon": "stock_alarm"
+}

@@ -1,0 +1,6 @@
+{
+    "uuid": "usgs-level@archmunky",
+    "name": "USGS Level",
+    "description": "Monitor the water site levels via USGS",
+    "icon": "kayak"
+}
