@@ -1,7 +1,7 @@
 {
+    "description": "Access user account details, lock screen, switch users, logout or shutdown the computer", 
     "uuid": "user-enhanced@archmunky", 
     "name": "User Applet Enhanced",
-    "description": "Enhancements to the default user applet", 
     "icon": "cs-user",
     "max-instances": -1
 }

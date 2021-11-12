@@ -44,12 +44,6 @@
         "description": "Limit song information to",
         "dependency": "showtrack"
     },
-    "hideUnknownArtist": {
-        "type": "switch",
-        "default": false,
-        "description": "Hide Unknown Artist on panel label",
-        "dependency": "showtrack"
-    },
     "middleClickAction": {
         "type": "combobox",
         "default": "mute",
