@@ -16,10 +16,11 @@ const PAGE_URL = 'https://www.spc.noaa.gov/products/outlook/day1otlk.html';
 
 const ICON_NAME = 'weather-storm-symbolic';            // none / TSTM–ENH
 const ICON_SEVERE = 'weather-severe-alert-symbolic';    // MDT and HIGH
-const ICON_NO_RISK = 'emblem-default-symbolic';         // checkmark in a circle, dim grey
+const ICON_NO_RISK = 'emblem-default-symbolic';         // checkmark in a circle, white
 const SEVERE_DN = 6;
 
 const DIM_COLOR = '#888888';
+const NO_RISK_COLOR = '#ffffff';
 const STALE_OPACITY = 150;           // 0–255
 const TIME_FMT = '%a %b %-d, %-l:%M %p %Z';
 
@@ -69,6 +70,7 @@ class SpcOutlookApplet extends Applet.TextIconApplet {
         this.settings.bind('longitude', 'longitude', this._onLocationChanged);
         this.settings.bind('refresh-interval', 'refreshInterval', this._restartTimer);
         this.settings.bind('display-mode', 'displayMode', this._render);
+        this.settings.bind('show-none-label', 'showNoneLabel', this._render);
         this.settings.bind('test-point', 'testPoint', this._onTestPointChanged);
 
         this._buildMenu(orientation);
@@ -232,11 +234,13 @@ class SpcOutlookApplet extends Applet.TextIconApplet {
             label = this._error ? '?' : '…';
             status = this._error ? 'No data (fetch failed)' : 'Loading…';
         } else if (!feature) {
-            // None: no text, dim grey checkmark-in-circle (plus "?" if stale).
+            // None: white checkmark-in-circle, plus "NONE" unless turned off or in icon-only mode
+            // (and "?" if stale).
             showIcon = true;
             iconName = ICON_NO_RISK;
-            color = DIM_COLOR;
-            label = stale ? '?' : '';
+            color = NO_RISK_COLOR;
+            const showNone = this.showNoneLabel && (this.displayMode || 'both') !== 'icon';
+            label = (showNone ? 'NONE' : '') + (stale ? '?' : '');
             status = 'No thunderstorm risk';
         } else {
             const dn = Number(feature.properties.DN);

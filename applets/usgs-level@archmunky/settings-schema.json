@@ -1,0 +1,73 @@
+{
+    "head-site": {
+        "type": "header",
+        "description": "Site"
+    },
+    "site-number": {
+        "type": "entry",
+        "default": "03335000",
+        "description": "USGS site number",
+        "tooltip": "The monitoring location ID from waterdata.usgs.gov (usually 8-15 digits)"
+    },
+    "head-display": {
+        "type": "header",
+        "description": "Display"
+    },
+    "show-label": {
+        "type": "switch",
+        "default": true,
+        "description": "Show label in panel",
+        "tooltip": "Show the gauge height text next to the icon. Turn off for icon only; the icon colour still reflects the level."
+    },
+    "show-flow": {
+        "type": "switch",
+        "default": true,
+        "dependency": "show-label",
+        "description": "Show flow in panel label",
+        "tooltip": "Append the discharge reading (\"@ 1234 ft3/s\") after the gauge height"
+    },
+    "head-thresholds": {
+        "type": "header",
+        "description": "Icon thresholds (gauge height)"
+    },
+    "threshold-low": {
+        "type": "spinbutton",
+        "default": 3.0,
+        "min": -100,
+        "max": 1000,
+        "step": 0.05,
+        "units": "ft",
+        "description": "Too low (red below)",
+        "tooltip": "Below this height the icon is red. From here up to the yellow threshold it is orange."
+    },
+    "threshold-yellow": {
+        "type": "spinbutton",
+        "default": 3.45,
+        "min": -100,
+        "max": 1000,
+        "step": 0.05,
+        "units": "ft",
+        "description": "Marginal (yellow above)",
+        "tooltip": "Above this height the icon is yellow"
+    },
+    "threshold-green": {
+        "type": "spinbutton",
+        "default": 3.75,
+        "min": -100,
+        "max": 1000,
+        "step": 0.05,
+        "units": "ft",
+        "description": "Good (green above)",
+        "tooltip": "Above this height the icon is green"
+    },
+    "threshold-high": {
+        "type": "spinbutton",
+        "default": 6.0,
+        "min": -100,
+        "max": 1000,
+        "step": 0.05,
+        "units": "ft",
+        "description": "Too high (red at or above)",
+        "tooltip": "At or above this height the icon is red"
+    }
+}

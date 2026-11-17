@@ -25,7 +25,8 @@ rather than relying on memory. Cinnamon's current state is what matters.
   No Cinnamon imports. It is loaded by the applet via `require('./spcgeo')` and by the
   test via `imports.spcgeo`. Both loaders export only top-level `var`/`function`
   declarations, so keep public symbols declared that way (not `const`/`let`).
-- `settings-schema.json`: `latitude`, `longitude`, `refresh-interval` (min), `display-mode` (`both|label|icon`).
+- `settings-schema.json`: `latitude`, `longitude`, `refresh-interval` (min), `display-mode` (`both|label|icon`),
+  `show-none-label` (switch), `test-point`.
 - `tests/classify-test.js`: run `cjs tests/classify-test.js`. Fixtures are in `tests/fixtures/`.
 
 ## SPC GeoJSON facts (verified against real files)
@@ -40,10 +41,11 @@ rather than relying on memory. Cinnamon's current state is what matters.
 
 ## Display decisions (from the user)
 - Label/icon color uses SPC's lighter **fill** colors (readable on dark panels).
-- No risk: no text, just a dim grey icon, regardless of display mode.
+- No risk: white (`#ffffff`) icon always shown, plus the label `NONE` (white) when `show-none-label` is on
+  (default) and display mode isn't `icon`. Previously it showed no text; the user asked for NONE plus a toggle.
 - Icon by severity: `weather-storm-symbolic` for loading/unknown and TSTM–ENH, `weather-severe-alert-symbolic`
   for MDT/HIGH (DN ≥ 6). Both exist in the user's theme (Qogir-Netscape-Dark → Qogir-Dark) and Adwaita.
-- No risk = `emblem-default-symbolic` (checkmark in a circle) in dim grey `#888888`, no text. This was the user's pick.
+- No risk = `emblem-default-symbolic` (checkmark in a circle) in white `#ffffff` (was dim grey `#888888` until the user asked for white). Icon was the user's pick.
   Rejected so far: cloud/sun icons (they imply sky conditions), a plain dimmed storm, and a dimmed storm with
   an `action-unavailable-symbolic` circle/slash overlay (the overlay code was removed; it overrode the private `_ensureIcon`).
 

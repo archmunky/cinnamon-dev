@@ -41,12 +41,18 @@
         "type": "combobox",
         "default": "both",
         "description": "Panel display",
-        "tooltip": "When there is no risk, only a dim grey icon is shown regardless of this setting",
+        "tooltip": "When there is no risk, a white checkmark icon is always shown; the NONE text follows the setting below (and is hidden in Icon only mode)",
         "options": {
             "Icon and label": "both",
             "Label only": "label",
             "Icon only": "icon"
         }
+    },
+    "show-none-label": {
+        "type": "switch",
+        "default": true,
+        "description": "Show NONE when there is no risk",
+        "tooltip": "Show the text NONE next to the checkmark when your location has no thunderstorm risk. Turn off for icon only."
     },
     "head-testing": {
         "type": "header",
