@@ -1,0 +1,6 @@
+{
+    "uuid": "displaykernel@archmunky",
+    "name": "DisplayKernel",
+    "description": "Shows the currently running kernel",
+    "icon": "utilities-terminal"
+}
