@@ -1,0 +1,71 @@
+{
+    "head-location": {
+        "type": "header",
+        "description": "Location"
+    },
+    "latitude": {
+        "type": "spinbutton",
+        "default": 40.43,
+        "min": -90,
+        "max": 90,
+        "step": 0.01,
+        "units": "°N",
+        "description": "Latitude",
+        "tooltip": "Decimal degrees, positive north (default: West Lafayette, IN)"
+    },
+    "longitude": {
+        "type": "spinbutton",
+        "default": -86.91,
+        "min": -180,
+        "max": 180,
+        "step": 0.01,
+        "units": "°E",
+        "description": "Longitude",
+        "tooltip": "Decimal degrees, negative west (default: West Lafayette, IN)"
+    },
+    "head-behavior": {
+        "type": "header",
+        "description": "Behavior"
+    },
+    "refresh-interval": {
+        "type": "spinbutton",
+        "default": 30,
+        "min": 5,
+        "max": 240,
+        "step": 5,
+        "units": "minutes",
+        "description": "Refresh interval",
+        "tooltip": "How often to re-download the SPC Day 1 outlook"
+    },
+    "display-mode": {
+        "type": "combobox",
+        "default": "both",
+        "description": "Panel display",
+        "tooltip": "When there is no risk, only a dim grey icon is shown regardless of this setting",
+        "options": {
+            "Icon and label": "both",
+            "Label only": "label",
+            "Icon only": "icon"
+        }
+    },
+    "head-testing": {
+        "type": "header",
+        "description": "Testing"
+    },
+    "test-point": {
+        "type": "combobox",
+        "default": "off",
+        "description": "Preview with archived outlook (2024-05-06)",
+        "tooltip": "Uses the bundled archived High Risk outlook instead of live data, at a city inside the chosen category. Ignores your latitude/longitude. Set back to Off for real data.",
+        "options": {
+            "Off (live data)": "off",
+            "Oklahoma City: HIGH": "okc",
+            "Wichita: MDT": "wichita",
+            "Kansas City: ENH": "kc",
+            "Omaha: SLGT": "omaha",
+            "Dallas: MRGL": "dallas",
+            "Chicago: TSTM": "chicago",
+            "Denver: no risk": "denver"
+        }
+    }
+}

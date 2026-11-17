@@ -4,7 +4,9 @@ const Lang = imports.lang;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const PopupMenu = imports.ui.popupMenu;
-const Soup = imports.gi.Soup;
+const Soup = imports.gi.Soup;   // Cinnamon pins Soup 3.0 (js/ui/environment.js)
+const GLib = imports.gi.GLib;
+const Gio = imports.gi.Gio;
 
 function MyApplet(orientation, panel_height, instance_id) {
     this._init(orientation, panel_height, instance_id);
@@ -64,6 +66,9 @@ MyApplet.prototype = {
         this.keepUpdating = false;
         if (this.timeout) Mainloop.source_remove(this.timeout);
         this.timeout = 0;
+        if (this._cancellable) this._cancellable.cancel();
+        this._cancellable = null;
+        if (this._session) this._session.abort();
     },
 
     update: function() {
@@ -78,11 +83,30 @@ MyApplet.prototype = {
         this.set_applet_icon_name("view-refresh");
         this.logInfo("USGS Level information updating");
 
+        if (!this._session) {
+            this._session = new Soup.Session({ timeout: 30, user_agent: 'usgs-level-cinnamon-applet/1.0' });
+        }
+        if (this._cancellable) this._cancellable.cancel();
+        let cancellable = new Gio.Cancellable();
+        this._cancellable = cancellable;
+
         let url = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=03335000";
-        let _httpSession = new Soup.Session();
         let message = Soup.Message.new('GET', url);
-        _httpSession.queue_message(message, Lang.bind(this,
-            function (_httpSession, message) {
+        this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable,
+            (session, result) => {
+                if (this._cancellable === cancellable) this._cancellable = null;
+
+                let bytes;
+                try {
+                    bytes = session.send_and_read_finish(result);
+                }
+                catch (e) {
+                    if (e instanceof GLib.Error && e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                        return;
+                    this.logError("Request error: " + e);
+                    this.setTooltip();
+                    return;
+                }
 
                 // calculate last check date and number of checks
                 try {
@@ -95,17 +119,17 @@ MyApplet.prototype = {
                 catch (e) {
                     this.logError("CheckDate calc error: " + e);
                     this.setTooltip();
-                    return this.keepUpdating;
+                    return;
                 }
 
-                if (message.status_code !== 200) {
-                    this.logInfo("USGS Level returned no data");
+                if (message.get_status() !== Soup.Status.OK) {
+                    this.logInfo("USGS Level returned HTTP " + message.get_status());
                     this.setTooltip();
-                    return this.keepUpdating;
+                    return;
                 }
 
                 try {
-                    let json = JSON.parse(message.response_body.data);
+                    let json = JSON.parse(new TextDecoder('utf-8').decode(bytes.get_data()));
 
                     siteName = json.value.timeSeries[0].sourceInfo.siteName;
                     
@@ -124,24 +148,18 @@ MyApplet.prototype = {
                     this.setLabel(mHeight + ' ' + mHeightUnit + ' @ ' + mFlow + ' ' + mFlowUnit);
                     this.setIcon(mHeight);
                     this.setTooltip();
-
-                    return this.keepUpdating;
-
                 }
                 catch (e) {
                     this.logError("JSON Parse error: " + e);
-                    setTooltip();
-                    return this.keepUpdating;
+                    this.setTooltip();
                 }
-
-    
-            }));
-    }, 
+            });
+    },
 
     setIcon:function(amt){
         if (amt < 3 || amt >= 6) {
             this.set_applet_icon_name("kayak-red");
-        } else if (amt > 3 && amt <= 3.45) {
+        } else if (amt >= 3 && amt <= 3.45) {
             this.set_applet_icon_name("kayak-orange");
         } else if (amt > 3.45 && amt <= 3.75) {
             this.set_applet_icon_name("kayak-yellow");

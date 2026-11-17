@@ -1,0 +1,7 @@
+{
+    "uuid": "spc-outlook@archmunky",
+    "name": "SPC Outlook",
+    "description": "Shows today's SPC Day 1 categorical convective outlook risk for your location",
+    "icon": "weather-storm",
+    "max-instances": -1
+}
