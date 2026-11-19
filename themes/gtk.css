@@ -1,0 +1,11 @@
+
+/* Custom titlebar color */
+headerbar, .titlebar,
+headerbar:backdrop, .titlebar:backdrop {
+  background-color: #093a3f;
+  background-image: none;
+  border-color: #093a3f;
+  box-shadow: none;
+  color: #ffffff;
+}
+headerbar:backdrop, .titlebar:backdrop { color: #b8c7c9; }
