@@ -1,26 +1,29 @@
 #!/usr/bin/env bash
-# Install the Qogir-Netscape-Dark GTK/Cinnamon theme, its icon theme and the
-# Bibata-Modern-Classic cursors for the current user, then copy the titlebar override gtk.css into the GTK 3 and
-# GTK 4 user config folders. Existing installs and gtk.css files are replaced.
+# Install the Qogir-Netscape-Dark and Qogir-Netscape-Light GTK/Cinnamon themes, their
+# icon themes and the Bibata-Modern-Classic cursors for the current user, then copy the
+# titlebar override gtk.css (dark teal titlebars, used by both variants) into the GTK 3
+# and GTK 4 user config folders. Existing installs and gtk.css files are replaced.
 # The cursors are skipped if the system already provides them (e.g. Linux Mint).
+# Also copies theme-mode-sync to ~/.local/bin (not started; see below).
 set -euo pipefail
 
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-NAME="Qogir-Netscape-Dark"
+NAMES=(Qogir-Netscape-Dark Qogir-Netscape-Light)
 
-THEME_SRC="$SRC_DIR/themes/$NAME"
-ICONS_SRC="$SRC_DIR/icons/$NAME"
 CSS_SRC="$SRC_DIR/themes/gtk.css"
+SYNC_SRC="$SRC_DIR/themes/theme-mode-sync.sh"
 
 CURSOR="Bibata-Modern-Classic"
 CURSOR_SRC="$SRC_DIR/icons/$CURSOR"
 
-THEME_DEST="$HOME/.themes/$NAME"
-ICONS_DEST="$HOME/.icons/$NAME"
 CURSOR_DEST="$HOME/.icons/$CURSOR"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-for path in "$THEME_SRC/index.theme" "$ICONS_SRC/index.theme" "$CURSOR_SRC/index.theme" "$CSS_SRC"; do
+required=("$CURSOR_SRC/index.theme" "$CSS_SRC" "$SYNC_SRC")
+for name in "${NAMES[@]}"; do
+    required+=("$SRC_DIR/themes/$name/index.theme" "$SRC_DIR/icons/$name/index.theme")
+done
+for path in "${required[@]}"; do
     if [[ ! -f "$path" ]]; then
         echo "Missing $path; run this from the cinnamon-dev repo." >&2
         exit 1
@@ -36,8 +39,14 @@ install_dir() {
     echo "Installed $(basename "$src") to $dest"
 }
 
-install_dir "$THEME_SRC" "$THEME_DEST"
-install_dir "$ICONS_SRC" "$ICONS_DEST"
+for name in "${NAMES[@]}"; do
+    install_dir "$SRC_DIR/themes/$name" "$HOME/.themes/$name"
+    install_dir "$SRC_DIR/icons/$name" "$HOME/.icons/$name"
+    # Refresh the icon cache so the new icons show up without a re-login.
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        gtk-update-icon-cache -f -q "$HOME/.icons/$name" || true
+    fi
+done
 
 # Skip the cursors if the distro already ships them (e.g. Linux Mint puts
 # Bibata in /usr/share/icons).
@@ -59,16 +68,19 @@ else
     install_dir "$CURSOR_SRC" "$CURSOR_DEST"
 fi
 
-# Refresh the icon cache so the new icons show up without a re-login.
-if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -f -q "$ICONS_DEST" || true
-fi
-
 for gtk in gtk-3.0 gtk-4.0; do
     mkdir -p "$CONFIG_DIR/$gtk"
     cp -f "$CSS_SRC" "$CONFIG_DIR/$gtk/gtk.css"
     echo "Copied gtk.css to $CONFIG_DIR/$gtk/gtk.css"
 done
+
+# Install the dark-mode helper (sets color-scheme and GTK 3 prefer-dark to match the
+# chosen theme). It is only copied, not started: run `theme-mode-sync --once` after
+# switching themes.
+SYNC_DEST="$HOME/.local/bin/theme-mode-sync"
+mkdir -p "$(dirname "$SYNC_DEST")"
+install -m 755 "$SYNC_SRC" "$SYNC_DEST"
+echo "Installed theme-mode-sync to $SYNC_DEST (run 'theme-mode-sync --once' after switching themes)"
 
 # Let VS Code open folders: make sure a user copy of its desktop file exists
 # and that its MimeType line includes inode/directory.
@@ -112,4 +124,4 @@ if [[ -f "$VSCODE_LOCAL" ]]; then
     fi
 fi
 
-echo "Done. Select $NAME in Themes (and restart running apps) if it isn't already active."
+echo "Done. Select Qogir-Netscape-Dark or Qogir-Netscape-Light in Themes (and restart running apps) if it isn't already active."
